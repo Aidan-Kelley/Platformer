@@ -17,5 +17,6 @@ public class MainFrame extends JFrame {
         this.add(panel);
 
         addKeyListener(new KeyChecker(panel));
+        addMouseListener(new MouseChecker(panel));
     }
 }

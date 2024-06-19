@@ -13,10 +13,10 @@ public class Player {
     double gravity = 0.5;
     double xAccel = 0.0, yAccel = gravity;
     Rectangle hitBox;
+    Color color = Color.BLACK;
     int framesUpPressed = 0;
     int inAir = 0;
     int framesJumping = 0;
-
     boolean keyLeft, keyRight, keyDown, keyUp;
 
     public Player(int x, int y, GamePanel panel) {
@@ -24,8 +24,8 @@ public class Player {
         this.x = x;
         this.y = y;
 
-        width = 50;
-        height = 100;
+        width = 46;
+        height = 90;
         hitBox = new Rectangle(x, y, width, height);
     }
 
@@ -38,20 +38,19 @@ public class Player {
                 xAccel = -Math.signum(xVel) * 0.25;
         } else if (keyLeft) {
             if (xVel > -7) {
-                if (xVel <= 0)
-                    xAccel = -0.5;
+                if (xVel <= -1)
+                    xAccel = -0.3;
                 else if (inAir > 0)
-                    xAccel = -0.7;
+                    xAccel = -0.6;
                 else
                     xAccel = -1.2;
             }
-
         } else if (keyRight) {
             if (xVel < 7) {
-                if (xVel >= 0)
-                    xAccel = 0.5;
+                if (xVel >= 1)
+                    xAccel = 0.3;
                 else if (inAir > 0)
-                    xAccel = 0.7;
+                    xAccel = 0.6;
                 else
                     xAccel = 1.2;
             }
@@ -63,7 +62,8 @@ public class Player {
 
         if (Math.abs(yVel) > 20)
             yVel = Math.signum(yVel) * 20;
-
+        else
+            color = Color.BLACK;
         hitBox.y++;
         if (onGround())
             inAir = 0;
@@ -113,7 +113,9 @@ public class Player {
                     hitBox.x -= xVel;
                     hitBox.x -= Math.signum(xVel) * 1;
                     hitBox.y += cornerClip;
-                    if (hitBox.intersects(wall.hitBox)) {
+                    if (hitBox.intersects(wall.hitBox) || inAir <= 1) { // inAir check is for running over one block
+                                                                        // gaps
+                        hitBox.x += xVel;
                         while (wall.hitBox.intersects(hitBox))
                             hitBox.y -= 1;
                         yVel = 0;
@@ -132,7 +134,7 @@ public class Player {
             for (Wall wall : panel.walls) {
                 if (hitBox.intersects(wall.hitBox)) {
                     hitBox.width = 16;
-                    int offset = (50 - hitBox.width) / 2;
+                    int offset = (width - hitBox.width) / 2;
                     hitBox.x += offset;
                     if (Math.abs(xVel) <= 10 && yVel < 0 && !hitBox.intersects(wall.hitBox)) {
                         hitBox.x -= offset;
@@ -141,14 +143,14 @@ public class Player {
                             pushDirection = 1;
                         else
                             pushDirection = -1;
-                        hitBox.width = 50;
+                        hitBox.width = width;
                         while (wall.hitBox.intersects(hitBox))
                             hitBox.x += pushDirection;
                         hitBox.x -= xVel;
                         panel.cameraX += x - hitBox.x;
                     } else {
                         hitBox.x -= offset;
-                        hitBox.width = 50;
+                        hitBox.width = width;
                         hitBox.y -= yVel;
                         while (!wall.hitBox.intersects(hitBox))
                             hitBox.y += Math.signum(yVel);
@@ -160,8 +162,7 @@ public class Player {
             }
 
         }
-
-        panel.cameraX -= xVel;
+        panel.cameraX -= Math.round(xVel);
         y += yVel;
         hitBox.x = x;
         hitBox.y = y;
@@ -195,7 +196,7 @@ public class Player {
     }
 
     public void draw(Graphics2D gtd) {
-        gtd.setColor(Color.BLACK);
+        gtd.setColor(color);
         gtd.fillRect(x, y, width, height);
     }
 }
