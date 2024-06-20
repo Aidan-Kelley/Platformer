@@ -8,7 +8,7 @@ import javax.swing.JFrame;
 public class Main {
     public static void main(String[] args) {
         MainFrame frame = new MainFrame();
-        frame.setTitle("Platformer");
+        frame.setTitle("Bob");
         frame.setSize(700, 700);
         // center window on screen
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

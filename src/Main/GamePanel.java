@@ -20,11 +20,10 @@ import javax.swing.JPanel;
 public class GamePanel extends JPanel implements ActionListener {
 
     Player player;
-    ArrayList<Wall> walls = new ArrayList<Wall>();
+    ArrayList<Tile> tiles = new ArrayList<Tile>();
     int cameraX;
     int offset;
     Timer gameTimer;
-
     Rectangle restartRect, homeRect;
     Font buttonFont = new Font("Arial", Font.BOLD, 30);
 
@@ -36,25 +35,23 @@ public class GamePanel extends JPanel implements ActionListener {
         player = new Player(400, 300, this);
 
         reset();
-
         gameTimer = new Timer();
         gameTimer.schedule(new TimerTask() {
 
             @Override
             public void run() {
-
-                if (walls.get(walls.size() - 1).x < 800) {
+                if (tiles.get(tiles.size() - 1).x < 800) {
                     offset += 700;
                     makeWalls(offset);
                 }
 
                 player.set();
-                for (Wall wall : walls)
-                    wall.set(cameraX);
+                for (Tile tile : tiles)
+                    tile.set(cameraX);
 
-                for (int i = 0; i < walls.size(); i++) {
-                    if (walls.get(i).x < -800)
-                        walls.remove(i);
+                for (int i = 0; i < tiles.size(); i++) {
+                    if (tiles.get(i).x < -800)
+                        tiles.remove(i);
                 }
                 repaint();
             }
@@ -63,12 +60,9 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void reset() {
-        player.x = 200;
-        player.y = -100;
+        player.init();
+        tiles.clear();
         cameraX = 150;
-        player.xVel = 0;
-        player.yVel = 0;
-        walls.clear();
         offset = -150;
         makeWalls(offset);
     }
@@ -78,8 +72,15 @@ public class GamePanel extends JPanel implements ActionListener {
         Random rand = new Random();
         int index = rand.nextInt(14);
         for (int i = 0; i < 14; i++) {
+            // tiles.add(new Wall(offset + i * size, 600, size, size));
             for (int j = 0; j < rand.nextInt(7); j++)
-                walls.add(new Wall(offset + i * size, 600 - j * size, size, size));
+                if (j == 1 && rand.nextInt(index + 1) < 6)
+                    tiles.add(new Lava(offset + i * size, 600 - j * size, size, size));
+                else
+                    tiles.add(new Wall(offset + i * size, 600 - j * size, size, size));
+            // if (rand.nextInt(10) > 6)
+            // tiles.add(new Wall(offset + i * size, 300, size, size));
+
         }
 
     }
@@ -90,8 +91,8 @@ public class GamePanel extends JPanel implements ActionListener {
         Graphics2D gtd = (Graphics2D) g;
 
         player.draw(gtd);
-        for (Wall w : walls)
-            w.draw(gtd);
+        for (Tile t : tiles)
+            t.draw(gtd);
 
         gtd.setColor(Color.BLACK);
         gtd.drawRect(550, 25, 50, 50);
@@ -103,6 +104,7 @@ public class GamePanel extends JPanel implements ActionListener {
         gtd.setFont(buttonFont);
         gtd.drawString("R", 564, 60);
         gtd.drawString("H", 639, 60);
+        gtd.drawString("" + player.xSubVel, 639, 120);
     }
 
     public void keyPressed(KeyEvent e) {
@@ -115,23 +117,25 @@ public class GamePanel extends JPanel implements ActionListener {
         if (e.getKeyChar() == 'd')
             player.keyRight = true;
         if (e.getKeyChar() == 'p') {
-            if (walls.get(walls.size() - 1).x < 800) {
+            if (tiles.get(tiles.size() - 1).x < 800) {
                 offset += 700;
                 makeWalls(offset);
             }
 
             player.set();
-            for (Wall wall : walls)
-                wall.set(cameraX);
+            for (Tile tile : tiles)
+                tile.set(cameraX);
 
-            for (int i = 0; i < walls.size(); i++) {
-                if (walls.get(i).x < -800)
-                    walls.remove(i);
+            for (int i = 0; i < tiles.size(); i++) {
+                if (tiles.get(i).x < -800)
+                    tiles.remove(i);
             }
             repaint();
         }
         if (e.getKeyChar() == 'r')
-            reset();
+            player.reset = true;
+        if (e.getKeyChar() == 'o')
+            System.out.println('o');
 
     }
 
