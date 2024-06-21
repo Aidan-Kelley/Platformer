@@ -1,7 +1,9 @@
-package Main;
+package Input;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import Main.GamePanel;
 
 public class MouseChecker extends MouseAdapter {
 

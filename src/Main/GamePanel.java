@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
@@ -26,6 +27,7 @@ public class GamePanel extends JPanel implements ActionListener {
     Timer gameTimer;
     Rectangle restartRect, homeRect;
     Font buttonFont = new Font("Arial", Font.BOLD, 30);
+    Spiny spiny = new Spiny(350, 556);
 
     public GamePanel() {
 
@@ -48,6 +50,7 @@ public class GamePanel extends JPanel implements ActionListener {
                 player.set();
                 for (Tile tile : tiles)
                     tile.set(cameraX);
+                // spiny.set(cameraX);
 
                 for (int i = 0; i < tiles.size(); i++) {
                     if (tiles.get(i).x < -800)
@@ -71,15 +74,20 @@ public class GamePanel extends JPanel implements ActionListener {
         int size = 50;
         Random rand = new Random();
         int index = rand.nextInt(14);
+        // for (int i = 0; i < 14; i++) {
+        // if (i >= 11)
+        // tiles.add(new Tile(offset + i * size, 400, size, size, Tile.Type.WALL));
+        // tiles.add(new Tile(offset + i * size, 600, size, size, Tile.Type.WALL));
+        // }
         for (int i = 0; i < 14; i++) {
-            // tiles.add(new Wall(offset + i * size, 600, size, size));
-            for (int j = 0; j < rand.nextInt(7); j++)
-                if (j == 1 && rand.nextInt(index + 1) < 6)
-                    tiles.add(new Lava(offset + i * size, 600 - j * size, size, size));
+            for (int j = 0; j < rand.nextInt(9); j++)
+                if (j == index / 3 && rand.nextInt(index + 1) < 6)
+                    continue;
+                // tiles.add(new Tile(offset + i * size, 600 - j * size, size, size,
+                // Tile.Type.LAVA));
                 else
-                    tiles.add(new Wall(offset + i * size, 600 - j * size, size, size));
-            // if (rand.nextInt(10) > 6)
-            // tiles.add(new Wall(offset + i * size, 300, size, size));
+                    tiles.add(new Tile(offset + i * size, 600 - j * size, size, size,
+                            Tile.Type.WALL));
 
         }
 
@@ -93,7 +101,7 @@ public class GamePanel extends JPanel implements ActionListener {
         player.draw(gtd);
         for (Tile t : tiles)
             t.draw(gtd);
-
+        // spiny.draw(gtd);
         gtd.setColor(Color.BLACK);
         gtd.drawRect(550, 25, 50, 50);
         gtd.drawRect(625, 25, 50, 50);
@@ -135,7 +143,7 @@ public class GamePanel extends JPanel implements ActionListener {
         if (e.getKeyChar() == 'r')
             player.reset = true;
         if (e.getKeyChar() == 'o')
-            System.out.println('o');
+            System.out.println(cameraX);
 
     }
 

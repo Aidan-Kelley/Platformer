@@ -1,7 +1,9 @@
-package Main;
+package Input;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+
+import Main.GamePanel;
 
 public class KeyChecker extends KeyAdapter {
     GamePanel panel;

@@ -2,6 +2,9 @@ package Main;
 
 import javax.swing.JFrame;
 
+import Input.KeyChecker;
+import Input.MouseChecker;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
