@@ -6,6 +6,8 @@ import java.awt.Panel;
 import java.awt.Rectangle;
 import java.net.SocketImpl;
 
+import util.SubPixelRectangle;
+
 public class Player {
 
     public int x, y, subX = 0;
@@ -19,7 +21,7 @@ public class Player {
     private double gravity = 0.5;
     private int xAccel = 0;
     private double yAccel = gravity;
-    private Rectangle hitBox;
+    private SubPixelRectangle hitBox;
     private Color color = Color.BLACK;
     private int framesUpPressed = 0;
     private int inAir = 0;
@@ -39,7 +41,7 @@ public class Player {
 
         width = 46; // 46
         height = 90; // 90
-        hitBox = new Rectangle(x, y, width, height);
+        hitBox = new SubPixelRectangle(x, y, width, height);
         currentState = State.STAND;
     }
 
