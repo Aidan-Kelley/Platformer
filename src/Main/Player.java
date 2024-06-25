@@ -44,9 +44,16 @@ public class Player {
     }
 
     public void set() {
-        int prev = panel.cameraX;
+        int prev = panel.cameraX; // temporary
         xAccel = 0;
-        if (inAir == 0) // can only crouch/uncrouch if on ground
+
+        // update in air status
+        if (onGround())
+            inAir = 0;
+        else
+            inAir++;
+
+        if (inAir == 0) { // can only crouch/uncrouch if on ground
             if (keyDown) {
                 if (currentState != State.CROUCH) {
                     setState(State.CROUCH);
@@ -63,7 +70,9 @@ public class Player {
 
                 }
             }
+        }
 
+        // left & Right movement
         if (keyLeft && keyRight || (!keyLeft && !keyRight)) {
             if (Math.abs(xSubVel) < 64)
                 xSubVel = 0;
@@ -82,14 +91,11 @@ public class Player {
         yAccel = gravity;
         yVel += yAccel;
 
+        // y speed cap
         if (Math.abs(yVel) > 20)
             yVel = Math.signum(yVel) * 20;
-        hitBox.y++;
-        if (onGround())
-            inAir = 0;
-        else
-            inAir++;
-        hitBox.y--;
+
+        // jumping
         if (keyUp) {
             if (framesUpPressed <= 1 && inAir == 0)
                 framesJumping = 1;
@@ -114,6 +120,7 @@ public class Player {
             gravity = 1;
         else
             gravity = 2;
+
         // Horizontal Collision
         boolean skipYCollision = false;
         if (!skipXCollision) {
@@ -150,6 +157,7 @@ public class Player {
                 }
             }
         }
+
         skipXCollision = false;
         // Vertical Collision
         if (!skipYCollision) {
@@ -161,16 +169,8 @@ public class Player {
                     hitBox.x += offset;
                     if (playerIsMovingAwayFrom(tile) && yVel < 0 && !hitBox.intersects(tile.hitBox)) {
                         hitBox.x -= offset;
-                        // byte pushDirection;
-                        // if (hitBox.intersects(tile.hitBox))
-                        // pushDirection = 1;
-                        // else
-                        // pushDirection = -1;
                         hitBox.width = width;
-                        // while (tile.hitBox.intersects(hitBox))
-                        // hitBox.x += pushDirection;
-                        // hitBox.x -= subPixelToPixel(xSubVel);
-                        panel.cameraX += x - hitBox.x;
+                        // panel.cameraX += x - hitBox.x;
                         if (Math.abs(xSubVel) > 128) {
                             skipXCollision = true;
                         }
@@ -192,8 +192,8 @@ public class Player {
         hitBox.x = x;
         hitBox.y = y;
 
-        if (y > 800)
-            panel.reset();
+        if (y > 800) // check if player fell off screen
+            reset = true;
         else {
             for (Tile tile : panel.tiles)
                 if (tile.isHarmful && tile.hitBox.intersects(hitBox)) {
@@ -201,6 +201,7 @@ public class Player {
                     break;
                 }
         }
+
         if (reset)
             panel.reset();
     }
@@ -302,11 +303,11 @@ public class Player {
     }
 
     private boolean onGround() {
+        hitBox.y++; // check if one pixel off the ground
         for (Tile tile : panel.tiles)
-            if (tile.hitBox.intersects(hitBox)) {
-                hitBox.y--;
-                if (!tile.hitBox.intersects(hitBox)) {
-                    hitBox.y++;
+            if (tile.hitBox.intersects(hitBox)) { // if touching ground
+                hitBox.y--; // move up a pixel
+                if (!tile.hitBox.intersects(hitBox)) { // check if player isn't inside the groudn
                     return true;
                 }
                 hitBox.y++;
