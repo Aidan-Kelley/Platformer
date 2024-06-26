@@ -18,7 +18,7 @@ public class Tile {
     public Type type;
 
     public static enum Type {
-        WALL, LAVA
+        WALL, LAVA, SPEED
     }
 
     public Tile(int x, int y, int width, int height, Type type) {
@@ -42,7 +42,12 @@ public class Tile {
                 outlineColor = Color.BLACK;
                 fillCOlor = Color.RED;
                 break;
-
+            case SPEED:
+                isSolid = false;
+                isHarmful = false;
+                outlineColor = Color.BLACK;
+                fillCOlor = Color.GREEN;
+                break;
             default:
                 isSolid = false;
                 isHarmful = false;
@@ -63,5 +68,9 @@ public class Tile {
         x = startX + cameraX;
         hitBox.x = x;
         return x;
+    }
+
+    public Type getType() {
+        return type;
     }
 }

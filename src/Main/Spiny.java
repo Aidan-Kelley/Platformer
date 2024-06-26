@@ -9,16 +9,19 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import util.Calculate;
+
 public class Spiny implements Enemy {
 
-    private final int WIDTH = 44;
-    private final int HEIGHT = 44;
+    private final int WIDTH = 44 * 4; // 44
+    private final int HEIGHT = 44 * 4; // 44
     private BufferedImage sprite;
     private int x, y;
     private int startX;
-    private int xVel, yVel;
+    public int xVel, yVel;
     private Rectangle hitbox;
     private int timer;
+    public int mass;
 
     public Spiny(int x, int y) {
         try {
@@ -30,15 +33,14 @@ public class Spiny implements Enemy {
         timer = 0;
         this.x = x;
         this.y = y;
-        xVel = 2;
+        xVel = -3;
         startX = x;
+        mass = WIDTH * HEIGHT;
         hitbox = new Rectangle(x, y, WIDTH, HEIGHT);
     }
 
     @Override
     public void set(int cameraX) {
-        if (timer % 100 == 0)
-            xVel *= -1;
         startX += xVel;
         x = startX + cameraX;
         hitbox.x = x;
@@ -49,11 +51,17 @@ public class Spiny implements Enemy {
     @Override
     public void draw(Graphics2D gtd) {
         gtd.drawImage(sprite, x, y, null);
+        gtd.setColor(Color.GRAY);
+        gtd.fillRect(x, y, WIDTH, HEIGHT);
     }
 
     @Override
     public Rectangle getHitbox() {
         return hitbox;
+    }
+
+    public void collide(int m, int v) {
+        xVel = Math.floorDiv(Calculate.finalVelocity(mass, xVel * 64, m, v), 64);
     }
 
 }

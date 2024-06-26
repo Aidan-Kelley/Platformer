@@ -6,8 +6,6 @@ import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 
-import util.SubPixelRectangle;
-
 public class Main {
     public static void main(String[] args) {
         MainFrame frame = new MainFrame();
@@ -18,7 +16,6 @@ public class Main {
         frame.setLocation((int) (screenSize.getWidth() / 2 -
                 frame.getSize().getWidth() / 2),
                 (int) (screenSize.getHeight() / 2 - frame.getSize().getHeight() / 2));
-
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);

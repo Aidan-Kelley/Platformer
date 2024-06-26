@@ -2,22 +2,21 @@ package Main;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Panel;
-import java.awt.Rectangle;
-import java.net.SocketImpl;
 
+import util.Calculate;
 import util.SubPixelRectangle;
 
 public class Player {
 
-    public int x, y, subX = 0;
+    public int x, y, cameraSubX = 0;
     public double yVel, temp;
-    public int xSubVel;
+    public int subXVel;
     public boolean keyLeft, keyRight, keyDown, keyUp, reset;
 
     private GamePanel panel;
-    private final int SUBPIXELS_PER_PIXEL = 64;
+    private final int SUBS_PER_PIXEL = 64;
     private int width, height;
+    private int mass;
     private double gravity = 0.5;
     private int xAccel = 0;
     private double yAccel = gravity;
@@ -39,8 +38,9 @@ public class Player {
         this.x = x;
         this.y = y;
 
-        width = 46; // 46
-        height = 90; // 90
+        width = 46;
+        height = 90;
+        mass = width * height;
         hitBox = new SubPixelRectangle(x, y, width, height);
         currentState = State.STAND;
     }
@@ -76,13 +76,13 @@ public class Player {
 
         // left & Right movement
         if (keyLeft && keyRight || (!keyLeft && !keyRight)) {
-            if (Math.abs(xSubVel) < 64 && inAir == 0)
-                xSubVel = 0;
+            if (Math.abs(subXVel) < 64 && inAir == 0)
+                subXVel = 0;
             else if (inAir == 0) {
                 if (currentState == State.CROUCH)
-                    xAccel = -Integer.signum(xSubVel) * 16;
+                    xAccel = -Integer.signum(subXVel) * 16;
                 else
-                    xAccel = -Integer.signum(xSubVel) * 29;
+                    xAccel = -Integer.signum(subXVel) * 29;
             }
         } else if (keyLeft) {
             move(-1);
@@ -90,7 +90,7 @@ public class Player {
             move(1);
         }
 
-        xSubVel += xAccel;
+        subXVel += xAccel;
 
         yAccel = gravity;
         yVel += yAccel;
@@ -128,24 +128,24 @@ public class Player {
         // Horizontal Collision
         boolean skipYCollision = false;
         if (!skipXCollision) {
-            hitBox.x += subPixelToPixel(xSubVel);
+            hitBox.addSubX(subXVel);
             for (Tile tile : panel.tiles) {
                 if (tile.isSolid && hitBox.intersects(tile.hitBox)) {
-                    if (Math.abs(xSubVel) > 320) {
+                    if (Math.abs(subXVel) > 320) {
                         int cornerClip = 20;
                         hitBox.y -= cornerClip;
                         if (hitBox.intersects(tile.hitBox)) {
                             hitBox.y += cornerClip;
-                            hitBox.x -= subPixelToPixel(xSubVel);
+                            hitBox.subtractSubX(subXVel);
                             handleXCollision(tile);
                         } else {
                             skipYCollision = true;
-                            hitBox.x -= subPixelToPixel(xSubVel);
+                            hitBox.subtractSubX(subXVel);
                             hitBox.y += cornerClip;
                             if (yVel >= -1) { // if in corner moving downward, snap up to floor, else do nothing
-                                hitBox.x -= Math.signum(xSubVel) * 1;
+                                hitBox.x -= Math.signum(subXVel) * 1;
                                 if (hitBox.intersects(tile.hitBox) || inAir <= 1) { // running over one block gaps
-                                    hitBox.x += subPixelToPixel(xSubVel);
+                                    hitBox.addSubX(subXVel);
                                     while (tile.hitBox.intersects(hitBox))
                                         hitBox.y -= 1;
                                     yVel = 0;
@@ -156,7 +156,7 @@ public class Player {
                             }
                         }
                     } else {
-                        hitBox.x -= subPixelToPixel(xSubVel);
+                        hitBox.subtractSubX(subXVel);
                         handleXCollision(tile);
                     }
                 }
@@ -176,7 +176,7 @@ public class Player {
                         hitBox.x -= offset;
                         hitBox.width = width;
                         // panel.cameraX += x - hitBox.x;
-                        if (Math.abs(xSubVel) > 128) {
+                        if (Math.abs(subXVel) > 128) {
                             skipXCollision = true;
                         }
                     } else {
@@ -191,7 +191,11 @@ public class Player {
         }
 
         // move camera according to speed
-        panel.cameraX -= (subPixelToPixel(xSubVel));
+        cameraSubX -= subXVel;
+        panel.cameraX += Math.floorDiv(cameraSubX, SUBS_PER_PIXEL);
+        cameraSubX = Math.floorMod(cameraSubX, SUBS_PER_PIXEL);
+        // System.out.println(prev - panel.cameraX);
+
         y += yVel;
         hitBox.x = x;
         hitBox.y = y;
@@ -200,55 +204,72 @@ public class Player {
             reset = true;
         else {
             for (Tile tile : panel.tiles)
-                if (tile.isHarmful && tile.hitBox.intersects(hitBox)) {
-                    panel.reset();
-                    break;
+                if (tile.hitBox.intersects(hitBox)) {
+                    if (tile.isHarmful) {
+                        panel.reset();
+                        break;
+                    }
+                    if (tile.getType() == Tile.Type.SPEED) {
+                        subXVel = 9 * SUBS_PER_PIXEL;
+                    }
+
                 }
         }
 
         if (reset)
             panel.reset();
+
+        if (hitBox.intersects(panel.spiny.getHitbox())) {
+            panel.spiny.collide(mass, subXVel);
+            subXVel = Calculate.finalVelocity(mass, subXVel, panel.spiny.mass, panel.spiny.xVel * 64);
+            System.out.println(subXVel);
+        }
     }
 
     private boolean playerIsMovingAwayFrom(Tile wall) {
-        return (xSubVel == 0) || (xSubVel > 0 && hitBox.x > wall.hitBox.x) || (xSubVel < 0 && hitBox.x < wall.hitBox.x);
+        return (subXVel == 0) || (subXVel > 0 && hitBox.x > wall.hitBox.x) || (subXVel < 0 && hitBox.x < wall.hitBox.x);
     }
 
     private void move(int dir) {
         switch (currentState) {
             case STAND:
-                if (xSubVel * dir < 448) {
-                    if (xSubVel * dir >= 1)
+                if (subXVel * dir < 448) {
+                    if (subXVel * dir >= 1)
                         xAccel = 19 * dir; // ground speeding up
                     else if (inAir > 0)
                         xAccel = 38 * dir; // air slowing down
                     else
                         xAccel = 77 * dir; // groudn slowing down
+
+                    if ((subXVel + xAccel) * dir > 448)
+                        xAccel = 448 * dir - subXVel;
+                } else if (subXVel > 448 && inAir == 0) {
+                    xAccel = -Integer.signum(subXVel) * 29; // slow down to running speed
                 }
                 break;
 
             case CROUCH:
                 if (inAir > 0) {
-                    if (xSubVel * dir < 448)
-                        if (xSubVel * dir >= 1)
+                    if (subXVel * dir < 448)
+                        if (subXVel * dir >= 1)
                             xAccel = 19 * dir; // crouch air speed up
                         else
                             xAccel = 38 * dir; // crouch air slow down
                 } else {
-                    if (xSubVel * dir < 64)
+                    if (subXVel * dir < 64)
                         xAccel = 19 * dir; // crouch walk
                     else
-                        xAccel = -Integer.signum(xSubVel) * 16; // slow down to crouch speed
+                        xAccel = -Integer.signum(subXVel) * 16; // slow down to crouch speed
                 }
                 break;
         }
     }
 
     private void handleXCollision(Tile wall) {
-        if (Math.abs(xSubVel) >= 1 && !wall.hitBox.intersects(hitBox)) {
+        if (Math.abs(subXVel) >= 1 && !wall.hitBox.intersects(hitBox)) {
             while (!wall.hitBox.intersects(hitBox))
-                hitBox.x += Integer.signum(xSubVel);
-            hitBox.x -= Integer.signum(xSubVel);
+                hitBox.x += Integer.signum(subXVel);
+            hitBox.x -= Integer.signum(subXVel);
         } else {
             hitBox.width = 1;
             byte pushDirection;
@@ -260,7 +281,7 @@ public class Player {
             // while (wall.hitBox.intersects(hitBox))
             hitBox.x += pushDirection;
         }
-        xSubVel = 0;
+        subXVel = 0;
         panel.cameraX += x - hitBox.x;
     }
 
@@ -283,10 +304,6 @@ public class Player {
             hitBox.x += pushDirection;
         }
         y = hitBox.y;
-    }
-
-    private int subPixelToPixel(int amount) {
-        return amount / SUBPIXELS_PER_PIXEL;
     }
 
     private void setState(State s) {
@@ -331,7 +348,7 @@ public class Player {
         y = -100;
         hitBox.x = x;
         hitBox.y = y;
-        xSubVel = 0;
+        subXVel = 0;
         yVel = 0;
     }
 }
