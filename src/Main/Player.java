@@ -46,7 +46,6 @@ public class Player {
     }
 
     public void set() {
-        int prev = panel.cameraX; // temporary
         xAccel = 0;
 
         // update in air status
@@ -194,7 +193,6 @@ public class Player {
         cameraSubX -= subXVel;
         panel.cameraX += Math.floorDiv(cameraSubX, SUBS_PER_PIXEL);
         cameraSubX = Math.floorMod(cameraSubX, SUBS_PER_PIXEL);
-        // System.out.println(prev - panel.cameraX);
 
         y += yVel;
         hitBox.x = x;
@@ -215,21 +213,26 @@ public class Player {
 
                 }
         }
-
         if (reset)
             panel.reset();
-
-        if (hitBox.intersects(panel.spiny.getHitbox())) {
-            panel.spiny.collide(mass, subXVel);
-            subXVel = Calculate.finalVelocity(mass, subXVel, panel.spiny.mass, panel.spiny.xVel * 64);
-            System.out.println(subXVel);
-        }
     }
 
-    private boolean playerIsMovingAwayFrom(Tile wall) {
-        return (subXVel == 0) || (subXVel > 0 && hitBox.x > wall.hitBox.x) || (subXVel < 0 && hitBox.x < wall.hitBox.x);
+    public void draw(Graphics2D gtd) {
+        gtd.setColor(color);
+        gtd.fillRect(x, y, width, hitBox.height);
     }
 
+    public void init() {
+        reset = false;
+        x = 200;
+        y = -100;
+        hitBox.x = x;
+        hitBox.y = y;
+        subXVel = 0;
+        yVel = 0;
+    }
+
+    // helpers
     private void move(int dir) {
         switch (currentState) {
             case STAND:
@@ -240,9 +243,6 @@ public class Player {
                         xAccel = 38 * dir; // air slowing down
                     else
                         xAccel = 77 * dir; // groudn slowing down
-
-                    if ((subXVel + xAccel) * dir > 448)
-                        xAccel = 448 * dir - subXVel;
                 } else if (subXVel > 448 && inAir == 0) {
                     xAccel = -Integer.signum(subXVel) * 29; // slow down to running speed
                 }
@@ -263,6 +263,9 @@ public class Player {
                 }
                 break;
         }
+        // speed cap
+        if (subXVel < 448 && (subXVel + xAccel) * dir > 448)
+            xAccel = 448 * dir - subXVel;
     }
 
     private void handleXCollision(Tile wall) {
@@ -337,18 +340,8 @@ public class Player {
         return false;
     }
 
-    public void draw(Graphics2D gtd) {
-        gtd.setColor(color);
-        gtd.fillRect(x, y, width, hitBox.height);
+    private boolean playerIsMovingAwayFrom(Tile wall) {
+        return (subXVel == 0) || (subXVel > 0 && hitBox.x > wall.hitBox.x) || (subXVel < 0 && hitBox.x < wall.hitBox.x);
     }
 
-    public void init() {
-        reset = false;
-        x = 200;
-        y = -100;
-        hitBox.x = x;
-        hitBox.y = y;
-        subXVel = 0;
-        yVel = 0;
-    }
 }
