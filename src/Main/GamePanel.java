@@ -74,20 +74,20 @@ public class GamePanel extends JPanel implements ActionListener {
         int size = 50;
         Random rand = new Random();
         int index = rand.nextInt(14);
-        for (int i = 0; i < 14; i++) {
-            if (i == 13)
-                tiles.add(new Tile(offset + i * size, 550, size, size, Tile.Type.SPEED));
-            tiles.add(new Tile(offset + i * size, 600, size, size, Tile.Type.WALL));
-
-        }
         // for (int i = 0; i < 14; i++) {
-        // for (int j = 0; j < rand.nextInt(9); j++)
-        // if (j == 1 && rand.nextInt(index + 1) < 6) // j == index / 3
-        // continue;
-        // else
-        // tiles.add(new Tile(offset + i * size, 600 - j * size, size, size,
-        // Tile.Type.WALL));
+        // if (i == 13)
+        // tiles.add(new Tile(offset + i * size, 550, size, size, Tile.Type.SPEED));
+        // tiles.add(new Tile(offset + i * size, 600, size, size, Tile.Type.WALL));
+
         // }
+        for (int i = 0; i < 14; i++) {
+            for (int j = 0; j < rand.nextInt(9); j++)
+                if (j == 1 && rand.nextInt(index + 1) < 6) // j == index / 3
+                    continue;
+                else
+                    tiles.add(new Tile(offset + i * size, 600 - j * size, size, size,
+                            Tile.Type.WALL));
+        }
         // for (int i = 0; i < 14; i++) {
         // for (int j = 0; j < rand.nextInt(8) + 1; j++)
         // if ((j == 1 || j == 2 || j == 3) && i <= 12)
