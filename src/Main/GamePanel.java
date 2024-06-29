@@ -35,7 +35,6 @@ public class GamePanel extends JPanel implements ActionListener {
         homeRect = new Rectangle(625, 25, 50, 50);
 
         player = new Player(400, 300, this);
-
         reset();
         gameTimer = new Timer();
         gameTimer.schedule(new TimerTask() {
@@ -63,7 +62,7 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void reset() {
-        player.init();
+        player.reset();
         tiles.clear();
         cameraX = 150;
         offset = -150;
@@ -80,22 +79,12 @@ public class GamePanel extends JPanel implements ActionListener {
         // }
         for (int i = 0; i < 14; i++) {
             for (int j = 0; j < rand.nextInt(9); j++)
-                if (j == 1 && rand.nextInt(index + 1) < 6) // j == index / 3
+                if (j == index / 3 && rand.nextInt(index + 1) < 6) // j == index / 3
                     continue;
                 else
                     tiles.add(new Tile(offset + i * size, 600 - j * size, size, size,
                             Tile.Type.WALL));
         }
-        // for (int i = 0; i < 14; i++) {
-        // for (int j = 0; j < rand.nextInt(8) + 1; j++)
-        // if ((j == 1 || j == 2 || j == 3) && i <= 12)
-        // continue;
-        // else
-        // tiles.add(new Tile(offset + i * size, 600 - j * size, size, size,
-        // Tile.Type.WALL));
-
-        // }
-
     }
 
     public void paint(Graphics g) {

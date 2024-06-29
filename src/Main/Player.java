@@ -1,10 +1,13 @@
 package Main;
 
+import static util.Constants.SUBS_PER_PIXEL;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import Main.Abilities.AbilityRunner;
+import Main.Abilities.Dash;
 import util.SubPixelRectangle;
-import static Main.Constants.SUBS_PER_PIXEL;
 
 public class Player {
 
@@ -25,9 +28,10 @@ public class Player {
     private MovementState state;
     private boolean skipXCollision = false;
     private boolean skipYCollision;
-    private int actionTimer, coolDownTimer;
+    public int actionTimer, coolDownTimer;
+    private AbilityRunner abilityRunner;
 
-    private enum MovementState {
+    public enum MovementState {
         NORMAL, CROUCH, DASH
     }
 
@@ -41,6 +45,7 @@ public class Player {
         mass = width * height;
         hitBox = new SubPixelRectangle(x, y, width, height);
         state = MovementState.NORMAL;
+        abilityRunner = new AbilityRunner(this);
     }
 
     public void set() {
@@ -58,19 +63,15 @@ public class Player {
             coolDownTimer--;
 
         if (coolDownTimer <= 0 && state == MovementState.NORMAL) {
+            color = Color.BLACK;
             if (keyAbility && inputDirection != 0)
                 if (state != MovementState.DASH) {
                     state = MovementState.DASH;
-                    actionTimer = 17;
-                    coolDownTimer = 60;
+                    abilityRunner.setAbility(new Dash(this));
+                    coolDownTimer = 50;
                 }
         }
 
-        if (actionTimer == 1) {
-            state = MovementState.NORMAL;
-        } else if (actionTimer == 0) {
-            setCrouching(keyDown);
-        }
         movement();
 
         if (!skipXCollision)
@@ -118,14 +119,14 @@ public class Player {
                 crouchMovement();
                 break;
             case DASH:
-                dashMovement();
+                abilityRunner.update();
                 break;
         }
     }
 
     private void defaultMovement() {
         int xAccel = 0;
-
+        setCrouching(keyDown);
         xAccel = getDefaultXAccel(inputDirection);
         // speed cap
         if (xSubVel < 448 && (xSubVel + xAccel) * inputDirection > 448)
@@ -137,7 +138,7 @@ public class Player {
 
     private void crouchMovement() {
         int xAccel = 0;
-
+        setCrouching(keyDown);
         xAccel = getCrouchXAccel(inputDirection);
         // speed cap
         if (xSubVel < 448 && (xSubVel + xAccel) * inputDirection > 448)
@@ -148,16 +149,23 @@ public class Player {
     }
 
     private void dashMovement() {
-        if (actionTimer < 7) {
-            xSubVel = 0;
-            framesJumping = 0;
-            yMovement();
-        } else {
-            yVel = 0;
-            xSubVel += 154 * inputDirection;
-            if (Math.abs(xSubVel) > 15 * SUBS_PER_PIXEL)
-                xSubVel = inputDirection * 15 * SUBS_PER_PIXEL;
-        }
+
+    }
+
+    public void dashInit() {
+    }
+
+    public void dashRun() {
+        yVel = 0;
+        xSubVel += 154 * inputDirection;
+        if (Math.abs(xSubVel) > 15 * SUBS_PER_PIXEL)
+            xSubVel = inputDirection * 15 * SUBS_PER_PIXEL;
+    }
+
+    public void dashEnd() {
+        xSubVel = 0;
+        framesJumping = 0;
+        yMovement();
     }
 
     private int getInputDirection() {
@@ -267,11 +275,23 @@ public class Player {
     }
 
     public void draw(Graphics2D gtd) {
+        if (state == MovementState.DASH) {
+            gtd.setColor(new Color(149, 149, 149));
+            gtd.fillRect(x - xSubVel / SUBS_PER_PIXEL * 10 / 4, y, width, hitBox.height);
+            gtd.setColor(Color.GRAY);
+            gtd.fillRect(x - xSubVel / SUBS_PER_PIXEL * 2, y, width, hitBox.height);
+            gtd.setColor(new Color(107, 107, 107));
+            gtd.fillRect(x - xSubVel / SUBS_PER_PIXEL * 6 / 4, y, width, hitBox.height);
+            gtd.setColor(new Color(85, 85, 85));
+            gtd.fillRect(x - xSubVel / SUBS_PER_PIXEL * 4 / 4, y, width, hitBox.height);
+            gtd.setColor(Color.DARK_GRAY);
+            gtd.fillRect(x - xSubVel / SUBS_PER_PIXEL * 2 / 4, y, width, hitBox.height);
+        }
         gtd.setColor(color);
         gtd.fillRect(x, y, width, hitBox.height);
     }
 
-    public void init() {
+    public void reset() {
         reset = false;
         x = 200;
         y = -100;
@@ -403,6 +423,10 @@ public class Player {
 
     private boolean playerIsMovingAwayFrom(Tile wall) {
         return (xSubVel == 0) || (xSubVel > 0 && hitBox.x > wall.hitBox.x) || (xSubVel < 0 && hitBox.x < wall.hitBox.x);
+    }
+
+    public void setState(MovementState s) {
+        state = s;
     }
 
 }

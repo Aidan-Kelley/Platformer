@@ -1,7 +1,8 @@
 package util;
 
+import static util.Constants.SUBS_PER_PIXEL;
+
 import java.awt.Rectangle;
-import static Main.Constants.SUBS_PER_PIXEL;
 
 public class SubPixelRectangle extends Rectangle {
 
