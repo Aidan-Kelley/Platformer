@@ -75,8 +75,6 @@ public class GamePanel extends JPanel implements ActionListener {
         Random rand = new Random();
         int index = rand.nextInt(14);
         // for (int i = 0; i < 14; i++) {
-        // if (i == 13)
-        // tiles.add(new Tile(offset + i * size, 550, size, size, Tile.Type.SPEED));
         // tiles.add(new Tile(offset + i * size, 600, size, size, Tile.Type.WALL));
 
         // }
@@ -119,7 +117,7 @@ public class GamePanel extends JPanel implements ActionListener {
         gtd.setFont(buttonFont);
         gtd.drawString("R", 564, 60);
         gtd.drawString("H", 639, 60);
-        gtd.drawString("" + player.subXVel, 639, 120);
+        gtd.drawString("" + player.xSubVel, 639, 120);
     }
 
     public void keyPressed(KeyEvent e) {

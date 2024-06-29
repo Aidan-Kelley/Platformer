@@ -1,12 +1,12 @@
 package util;
 
 import java.awt.Rectangle;
+import static Main.Constants.SUBS_PER_PIXEL;
 
 public class SubPixelRectangle extends Rectangle {
 
     public int subX;
     public int subY;
-    private final int SUBS_PER_PIXEL = 64;
 
     public SubPixelRectangle(int x, int y, int width, int height) {
         super(x, y, width, height);
