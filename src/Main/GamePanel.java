@@ -126,7 +126,7 @@ public class GamePanel extends JPanel implements ActionListener {
         if (e.getKeyChar() == 'a')
             player.keyLeft = true;
         if (e.getKeyChar() == 'w')
-            player.keyUp = true;
+            player.keyJump = true;
         if (e.getKeyChar() == 's')
             player.keyDown = true;
         if (e.getKeyChar() == 'd')
