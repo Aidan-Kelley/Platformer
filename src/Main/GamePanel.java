@@ -125,12 +125,16 @@ public class GamePanel extends JPanel implements ActionListener {
     public void keyPressed(KeyEvent e) {
         if (e.getKeyChar() == 'a')
             player.keyLeft = true;
-        if (e.getKeyChar() == 'w' || e.getKeyCode() == 39)
+        if (e.getKeyChar() == 'w')
             player.keyUp = true;
         if (e.getKeyChar() == 's')
             player.keyDown = true;
         if (e.getKeyChar() == 'd')
             player.keyRight = true;
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT)
+            player.keyJump = true;
+        if (e.getKeyCode() == KeyEvent.VK_LEFT)
+            player.keyAbility = true;
         if (e.getKeyChar() == 'p') {
             if (tiles.get(tiles.size() - 1).x < 800) {
                 offset += 700;
@@ -157,12 +161,16 @@ public class GamePanel extends JPanel implements ActionListener {
     public void keyReleased(KeyEvent e) {
         if (e.getKeyChar() == 'a')
             player.keyLeft = false;
-        if (e.getKeyChar() == 'w' || e.getKeyCode() == 39)
-            player.keyUp = false;
+        if (e.getKeyChar() == 'w')
+            player.keyJump = false;
         if (e.getKeyChar() == 's')
             player.keyDown = false;
         if (e.getKeyChar() == 'd')
             player.keyRight = false;
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT)
+            player.keyJump = false;
+        if (e.getKeyCode() == KeyEvent.VK_LEFT)
+            player.keyAbility = false;
     }
 
     @Override
