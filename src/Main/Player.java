@@ -24,7 +24,6 @@ public class Player {
     private int inAir = 0;
     private int framesJumping = 0;
     private PlayerState playerState;
-    private int actionTimer = 0;
     private boolean skipXCollision = false;
     private boolean skipYCollision;
 
