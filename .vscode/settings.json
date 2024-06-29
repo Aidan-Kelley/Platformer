@@ -5,8 +5,6 @@
         "lib/**/*.jar"
     ],
     "git.repositoryScanIgnoredFolders": [
-        "node_modules",
-        ".vscode",
-        "bin"
+        "node_modules"
     ]
 }
