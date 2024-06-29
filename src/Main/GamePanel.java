@@ -72,18 +72,30 @@ public class GamePanel extends JPanel implements ActionListener {
     public void makeWalls(int offset) {
         int size = 50;
         Random rand = new Random();
-        int index = rand.nextInt(14);
+        int index = rand.nextInt(15);
         // for (int i = 0; i < 14; i++) {
         // tiles.add(new Tile(offset + i * size, 600, size, size, Tile.Type.WALL));
 
         // }
-        for (int i = 0; i < 14; i++) {
-            for (int j = 0; j < rand.nextInt(9); j++)
-                if (j == index / 3 && rand.nextInt(index + 1) < 6) // j == index / 3
-                    continue;
-                else
-                    tiles.add(new Tile(offset + i * size, 600 - j * size, size, size,
+        if (index == 14) {
+            for (int i = 0; i < 14; i++)
+                if (i < 6)
+                    tiles.add(new Tile(offset + i * size, 600, size, size,
                             Tile.Type.WALL));
+                else
+                    for (int j = 0; j < i - 5; j++) {
+                        tiles.add(new Tile(offset + i * size, 600 - j * size, size, size,
+                                Tile.Type.WALL));
+                    }
+        } else {
+            for (int i = 0; i < 14; i++) {
+                for (int j = 0; j < rand.nextInt(9); j++)
+                    if (j == index / 3 && rand.nextInt(index + 1) < 6) // j == index / 3
+                        continue;
+                    else
+                        tiles.add(new Tile(offset + i * size, 600 - j * size, size, size,
+                                Tile.Type.WALL));
+            }
         }
     }
 

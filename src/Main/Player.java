@@ -312,7 +312,7 @@ public class Player {
             if (xSubVel * dir >= 1)
                 return 19 * dir; // ground speeding up
             else if (inAir > 0)
-                return 38 * dir; // air slowing down
+                return 35 * dir; // air slowing down
             else
                 return 77 * dir; // groudn slowing down
         } else if (xSubVel > 448 && inAir == 0) {
@@ -332,7 +332,7 @@ public class Player {
                 if (xSubVel * dir >= 1)
                     return 19 * dir; // crouch air speed up
                 else
-                    return 38 * dir; // crouch air slow down
+                    return 35 * dir; // crouch air slow down
         } else {
             if (xSubVel * dir < 64)
                 return 19 * dir; // crouch walk
