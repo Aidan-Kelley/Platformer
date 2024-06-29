@@ -3,5 +3,10 @@
     "java.project.outputPath": "bin",
     "java.project.referencedLibraries": [
         "lib/**/*.jar"
+    ],
+    "git.repositoryScanIgnoredFolders": [
+        "node_modules",
+        ".vscode",
+        "bin"
     ]
 }
