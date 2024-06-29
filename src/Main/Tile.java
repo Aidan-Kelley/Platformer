@@ -46,7 +46,7 @@ public class Tile {
                 isSolid = false;
                 isHarmful = false;
                 outlineColor = Color.BLACK;
-                fillCOlor = Color.GREEN;
+                fillCOlor = Color.CYAN;
                 break;
             default:
                 isSolid = false;
