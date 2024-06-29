@@ -153,10 +153,11 @@ public class Player {
     }
 
     public void dashInit() {
+        yVel = 0;
+        framesJumping = 0;
     }
 
     public void dashRun() {
-        yVel = 0;
         xSubVel += 154 * inputDirection;
         if (Math.abs(xSubVel) > 15 * SUBS_PER_PIXEL)
             xSubVel = inputDirection * 15 * SUBS_PER_PIXEL;
@@ -164,7 +165,6 @@ public class Player {
 
     public void dashEnd() {
         xSubVel = 0;
-        framesJumping = 0;
         yMovement();
     }
 

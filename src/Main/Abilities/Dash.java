@@ -7,7 +7,7 @@ public class Dash extends Ability {
     private Player player;
 
     public Dash(Player p) {
-        super(0, 11, 5, 18);
+        super(1, 11, 5, 18);
         player = p;
     }
 
