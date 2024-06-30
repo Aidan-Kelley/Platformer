@@ -92,7 +92,7 @@ public class Player {
         hitBox.y = y;
 
         if (y > 800) // check if player fell off screen
-            reset = true;
+            respawn();
         else {
             for (Tile tile : panel.tiles)
                 if (tile.hitBox.intersects(hitBox)) {
@@ -429,4 +429,10 @@ public class Player {
         state = s;
     }
 
+    private void respawn() {
+        panel.cameraX += 450;
+        if (panel.cameraX > 350)
+            panel.cameraX = 350;
+        reset();
+    }
 }
