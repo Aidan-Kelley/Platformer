@@ -18,16 +18,18 @@ import java.util.TimerTask;
 
 import javax.swing.JPanel;
 
+import Main.Player.Player;
+
 public class GamePanel extends JPanel implements ActionListener {
 
-    Player player;
-    ArrayList<Tile> tiles = new ArrayList<Tile>();
-    int cameraX;
-    int offset;
-    Timer gameTimer;
-    Rectangle restartRect, homeRect;
-    Font buttonFont = new Font("Arial", Font.BOLD, 30);
-    Spiny spiny = new Spiny(350, 556);
+    private Player player;
+    private ArrayList<Tile> tiles = new ArrayList<Tile>();
+    public int cameraX;
+    private int offset;
+    private Timer gameTimer;
+    private Rectangle restartRect, homeRect;
+    private Font buttonFont = new Font("Arial", Font.BOLD, 30);
+    private Spiny spiny = new Spiny(350, 556);
 
     public GamePanel() {
 
@@ -97,6 +99,10 @@ public class GamePanel extends JPanel implements ActionListener {
                                 Tile.Type.WALL));
             }
         }
+    }
+
+    public ArrayList<Tile> getTiles() {
+        return tiles;
     }
 
     public void paint(Graphics g) {

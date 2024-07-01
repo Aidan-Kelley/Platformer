@@ -1,7 +1,6 @@
-package Main.Abilities;
+package Main.Player;
 
-import Main.Player;
-import Main.Player.MovementState;
+import Main.Player.Player.MovementState;
 
 public class AbilityRunner {
 

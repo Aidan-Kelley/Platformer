@@ -1,12 +1,13 @@
-package Main;
+package Main.Player;
 
 import static util.Constants.SUBS_PER_PIXEL;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import Main.Abilities.AbilityRunner;
-import Main.Abilities.Dash;
+import Main.GamePanel;
+import Main.Tile;
+import Main.Tile.Type;
 import util.SubPixelRectangle;
 
 public class Player {
@@ -15,7 +16,11 @@ public class Player {
     public double yVel, temp;
     public int xSubVel;
     public boolean keyLeft, keyRight, keyUp, keyDown, keyJump, keyAbility, reset;
-    private int inputDirection;
+    protected int inputDirection;
+    protected int actionTimer, coolDownTimer;
+    protected int inAir = 0;
+    protected int framesJumping = 0;
+    protected MovementState state;
     private GamePanel panel;
     private int width, height;
     private int mass;
@@ -23,12 +28,8 @@ public class Player {
     private SubPixelRectangle hitBox;
     private Color color = Color.BLACK;
     private int framesUpPressed = 0;
-    private int inAir = 0;
-    private int framesJumping = 0;
-    private MovementState state;
     private boolean skipXCollision = false;
     private boolean skipYCollision;
-    public int actionTimer, coolDownTimer;
     private AbilityRunner abilityRunner;
 
     public enum MovementState {
@@ -94,7 +95,7 @@ public class Player {
         if (y > 800) // check if player fell off screen
             respawn();
         else {
-            for (Tile tile : panel.tiles)
+            for (Tile tile : panel.getTiles())
                 if (tile.hitBox.intersects(hitBox)) {
                     if (tile.isHarmful) {
                         panel.reset();
@@ -148,26 +149,6 @@ public class Player {
         yMovement();
     }
 
-    private void dashMovement() {
-
-    }
-
-    public void dashInit() {
-        yVel = 0;
-        framesJumping = 0;
-    }
-
-    public void dashRun() {
-        xSubVel += 154 * inputDirection;
-        if (Math.abs(xSubVel) > 15 * SUBS_PER_PIXEL)
-            xSubVel = inputDirection * 15 * SUBS_PER_PIXEL;
-    }
-
-    public void dashEnd() {
-        xSubVel = 0;
-        yMovement();
-    }
-
     private int getInputDirection() {
         if (keyLeft && keyRight || (!keyLeft && !keyRight)) {
             if (Math.abs(xSubVel) < 64 && inAir == 0)
@@ -181,7 +162,7 @@ public class Player {
         return 0;
     }
 
-    private void yMovement() {
+    protected void yMovement() {
         double yAccel = gravity;
         yVel += yAccel;
 
@@ -216,7 +197,7 @@ public class Player {
 
     private void horizontalCollision() {
         hitBox.addSubX(xSubVel);
-        for (Tile tile : panel.tiles) {
+        for (Tile tile : panel.getTiles()) {
             if (tile.isSolid && hitBox.intersects(tile.hitBox)) {
                 if (Math.abs(xSubVel) > 320) {
                     int cornerClip = 25;
@@ -252,7 +233,7 @@ public class Player {
 
     private void verticalCollision() {
         hitBox.y += yVel;
-        for (Tile tile : panel.tiles) {
+        for (Tile tile : panel.getTiles()) {
             if (tile.isSolid && hitBox.intersects(tile.hitBox)) {
                 hitBox.width = 16;
                 int offset = (width - hitBox.width) / 2;
@@ -395,7 +376,7 @@ public class Player {
             } else {
                 if (state == MovementState.CROUCH) {
                     hitBox.y -= height - 40;
-                    for (Tile tile : panel.tiles) {
+                    for (Tile tile : panel.getTiles()) {
                         if (hitBox.intersects(tile.hitBox)) {
                             hitBox.y += height - 40;
                             return;
@@ -410,7 +391,7 @@ public class Player {
 
     private boolean onGround() {
         hitBox.y++; // check if one pixel off the ground
-        for (Tile tile : panel.tiles)
+        for (Tile tile : panel.getTiles())
             if (tile.hitBox.intersects(hitBox)) { // if touching ground
                 hitBox.y--; // move up a pixel
                 if (!tile.hitBox.intersects(hitBox)) { // check if player isn't inside the groudn

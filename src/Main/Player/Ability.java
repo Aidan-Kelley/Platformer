@@ -1,4 +1,4 @@
-package Main.Abilities;
+package Main.Player;
 
 public abstract class Ability {
 
