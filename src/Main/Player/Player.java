@@ -84,9 +84,11 @@ public class Player {
         skipYCollision = false;
 
         // move camera according to speed
-        cameraSubX -= xSubVel;
-        panel.cameraX += Math.floorDiv(cameraSubX, SUBS_PER_PIXEL);
-        cameraSubX = Math.floorMod(cameraSubX, SUBS_PER_PIXEL);
+        // cameraSubX -= xSubVel;
+        // panel.cameraX += Math.floorDiv(cameraSubX, SUBS_PER_PIXEL);
+        // cameraSubX = Math.floorMod(cameraSubX, SUBS_PER_PIXEL);
+        hitBox.addSubX(xSubVel);
+        panel.cameraX += x - hitBox.x;
 
         y += yVel;
         hitBox.x = x;
@@ -206,6 +208,7 @@ public class Player {
                         hitBox.y += cornerClip;
                         hitBox.subtractSubX(xSubVel);
                         xPushOutOfWall(tile);
+                        return;
                     } else {
                         skipYCollision = true;
                         hitBox.subtractSubX(xSubVel);
@@ -220,15 +223,39 @@ public class Player {
                                 y = hitBox.y;
                             } else {
                                 xPushOutOfWall(tile);
+                                return;
                             }
                         }
                     }
                 } else {
                     hitBox.subtractSubX(xSubVel);
                     xPushOutOfWall(tile);
+                    return;
                 }
             }
         }
+        hitBox.subtractSubX(xSubVel);
+    }
+
+    private void xPushOutOfWall(Tile wall) {
+        if (Math.abs(xSubVel) >= 1 && !wall.hitBox.intersects(hitBox)) {
+            while (!wall.hitBox.intersects(hitBox))
+                hitBox.x += Integer.signum(xSubVel);
+            hitBox.x -= Integer.signum(xSubVel);
+        } else {
+            hitBox.width = 1;
+            byte pushDirection;
+            if (hitBox.intersects(wall.hitBox))
+                pushDirection = 1;
+            else
+                pushDirection = -1;
+            hitBox.width = width;
+            // while (wall.hitBox.intersects(hitBox))
+            hitBox.x += pushDirection;
+        }
+        xSubVel = 0;
+        panel.cameraX += x - hitBox.x;
+        hitBox.x = x;
     }
 
     private void verticalCollision() {
@@ -321,26 +348,6 @@ public class Player {
                 return -Integer.signum(xSubVel) * 16; // slow down to crouch speed
         }
         return 0;
-    }
-
-    private void xPushOutOfWall(Tile wall) {
-        if (Math.abs(xSubVel) >= 1 && !wall.hitBox.intersects(hitBox)) {
-            while (!wall.hitBox.intersects(hitBox))
-                hitBox.x += Integer.signum(xSubVel);
-            hitBox.x -= Integer.signum(xSubVel);
-        } else {
-            hitBox.width = 1;
-            byte pushDirection;
-            if (hitBox.intersects(wall.hitBox))
-                pushDirection = 1;
-            else
-                pushDirection = -1;
-            hitBox.width = width;
-            // while (wall.hitBox.intersects(hitBox))
-            hitBox.x += pushDirection;
-        }
-        xSubVel = 0;
-        panel.cameraX += x - hitBox.x;
     }
 
     private void yPushOutOfWall(Tile wall) {
