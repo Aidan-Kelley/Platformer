@@ -250,7 +250,6 @@ public class Player {
             else
                 pushDirection = -1;
             hitBox.width = width;
-            // while (wall.hitBox.intersects(hitBox))
             hitBox.x += pushDirection;
         }
         xSubVel = 0;
@@ -282,31 +281,25 @@ public class Player {
         }
     }
 
-    public void draw(Graphics2D gtd) {
-        if (state == MovementState.DASH) {
-            gtd.setColor(new Color(149, 149, 149));
-            gtd.fillRect(x - xSubVel / SUBS_PER_PIXEL * 10 / 4, y, width, hitBox.height);
-            gtd.setColor(Color.GRAY);
-            gtd.fillRect(x - xSubVel / SUBS_PER_PIXEL * 2, y, width, hitBox.height);
-            gtd.setColor(new Color(107, 107, 107));
-            gtd.fillRect(x - xSubVel / SUBS_PER_PIXEL * 6 / 4, y, width, hitBox.height);
-            gtd.setColor(new Color(85, 85, 85));
-            gtd.fillRect(x - xSubVel / SUBS_PER_PIXEL * 4 / 4, y, width, hitBox.height);
-            gtd.setColor(Color.DARK_GRAY);
-            gtd.fillRect(x - xSubVel / SUBS_PER_PIXEL * 2 / 4, y, width, hitBox.height);
+    private void yPushOutOfWall(Tile wall) {
+        if (yVel != 0) {
+            while (!wall.hitBox.intersects(hitBox))
+                hitBox.y += Math.signum(yVel);
+            hitBox.y -= Math.signum(yVel);
+            yVel = 0;
+        } else {
+            int temp = hitBox.height;
+            hitBox.height = 1;
+            byte pushDirection;
+            if (hitBox.intersects(wall.hitBox))
+                pushDirection = 1;
+            else
+                pushDirection = -1;
+            hitBox.height = temp;
+            // while (wall.hitBox.intersects(hitBox))
+            hitBox.x += pushDirection;
         }
-        gtd.setColor(color);
-        gtd.fillRect(x, y, width, hitBox.height);
-    }
-
-    public void reset() {
-        reset = false;
-        x = 200;
-        y = -100;
-        hitBox.x = x;
-        hitBox.y = y;
-        xSubVel = 0;
-        yVel = 0;
+        y = hitBox.y;
     }
 
     private int getDefaultXAccel(int dir) {
@@ -350,27 +343,6 @@ public class Player {
         return 0;
     }
 
-    private void yPushOutOfWall(Tile wall) {
-        if (yVel != 0) {
-            while (!wall.hitBox.intersects(hitBox))
-                hitBox.y += Math.signum(yVel);
-            hitBox.y -= Math.signum(yVel);
-            yVel = 0;
-        } else {
-            int temp = hitBox.height;
-            hitBox.height = 1;
-            byte pushDirection;
-            if (hitBox.intersects(wall.hitBox))
-                pushDirection = 1;
-            else
-                pushDirection = -1;
-            hitBox.height = temp;
-            // while (wall.hitBox.intersects(hitBox))
-            hitBox.x += pushDirection;
-        }
-        y = hitBox.y;
-    }
-
     private void setCrouching(boolean setCrouch) {
         if (inAir == 0)
             if (setCrouch) {
@@ -396,6 +368,44 @@ public class Player {
             }
     }
 
+    public void setState(MovementState s) {
+        state = s;
+    }
+
+    private void respawn() {
+        panel.cameraX += 450;
+        if (panel.cameraX > 350)
+            panel.cameraX = 350;
+        reset();
+    }
+
+    public void reset() {
+        reset = false;
+        x = 200;
+        y = -100;
+        hitBox.x = x;
+        hitBox.y = y;
+        xSubVel = 0;
+        yVel = 0;
+    }
+
+    public void draw(Graphics2D gtd) {
+        if (state == MovementState.DASH) {
+            gtd.setColor(new Color(149, 149, 149));
+            gtd.fillRect(x - xSubVel / SUBS_PER_PIXEL * 10 / 4, y, width, hitBox.height);
+            gtd.setColor(Color.GRAY);
+            gtd.fillRect(x - xSubVel / SUBS_PER_PIXEL * 2, y, width, hitBox.height);
+            gtd.setColor(new Color(107, 107, 107));
+            gtd.fillRect(x - xSubVel / SUBS_PER_PIXEL * 6 / 4, y, width, hitBox.height);
+            gtd.setColor(new Color(85, 85, 85));
+            gtd.fillRect(x - xSubVel / SUBS_PER_PIXEL * 4 / 4, y, width, hitBox.height);
+            gtd.setColor(Color.DARK_GRAY);
+            gtd.fillRect(x - xSubVel / SUBS_PER_PIXEL * 2 / 4, y, width, hitBox.height);
+        }
+        gtd.setColor(color);
+        gtd.fillRect(x, y, width, hitBox.height);
+    }
+
     private boolean onGround() {
         hitBox.y++; // check if one pixel off the ground
         for (Tile tile : panel.getTiles())
@@ -411,16 +421,5 @@ public class Player {
 
     private boolean playerIsMovingAwayFrom(Tile wall) {
         return (xSubVel == 0) || (xSubVel > 0 && hitBox.x > wall.hitBox.x) || (xSubVel < 0 && hitBox.x < wall.hitBox.x);
-    }
-
-    public void setState(MovementState s) {
-        state = s;
-    }
-
-    private void respawn() {
-        panel.cameraX += 450;
-        if (panel.cameraX > 350)
-            panel.cameraX = 350;
-        reset();
     }
 }
