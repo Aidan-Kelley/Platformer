@@ -38,29 +38,29 @@ public class GamePanel extends JPanel implements ActionListener {
 
         player = new Player(400, 300, this);
         reset();
-        // gameTimer = new Timer();
-        // gameTimer.schedule(new TimerTask() {
+        gameTimer = new Timer();
+        gameTimer.schedule(new TimerTask() {
 
-        // @Override
-        // public void run() {
-        // if (tiles.get(tiles.size() - 1).x < 800) {
-        // offset += 700;
-        // makeWalls(offset);
-        // }
+            @Override
+            public void run() {
+                if (tiles.get(tiles.size() - 1).x < 800) {
+                    offset += 700;
+                    makeWalls(offset);
+                }
 
-        // player.set();
-        // for (Tile tile : tiles)
-        // tile.set(cameraX);
-        // // spiny.set(cameraX);
+                player.set();
+                for (Tile tile : tiles)
+                    tile.set(cameraX);
+                // spiny.set(cameraX);
 
-        // for (int i = 0; i < tiles.size(); i++) {
-        // if (tiles.get(i).x < -800)
-        // tiles.remove(i);
-        // }
-        // repaint();
-        // }
+                for (int i = 0; i < tiles.size(); i++) {
+                    if (tiles.get(i).x < -800)
+                        tiles.remove(i);
+                }
+                repaint();
+            }
 
-        // }, 0, 17);
+        }, 0, 17);
     }
 
     public void reset() {
