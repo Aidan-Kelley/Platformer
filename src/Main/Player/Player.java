@@ -197,6 +197,7 @@ public class Player {
             gravity = 2;
     }
 
+    // goofy collisions
     private void horizontalCollision() {
         hitBox.addSubX(xSubVel);
         for (Tile tile : panel.getTiles()) {
@@ -226,6 +227,7 @@ public class Player {
                                 return;
                             }
                         }
+                        return;
                     }
                 } else {
                     hitBox.subtractSubX(xSubVel);
