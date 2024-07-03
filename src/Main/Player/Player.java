@@ -199,6 +199,7 @@ public class Player {
 
     // goofy collisions
     private void horizontalCollision() {
+        boolean temporary = true;
         hitBox.addSubX(xSubVel);
         for (Tile tile : panel.getTiles()) {
             if (tile.isSolid && hitBox.intersects(tile.hitBox)) {
@@ -226,8 +227,9 @@ public class Player {
                                 xPushOutOfWall(tile);
                                 return;
                             }
+                        } else {
+                            temporary = false;
                         }
-                        return;
                     }
                 } else {
                     hitBox.subtractSubX(xSubVel);
@@ -236,7 +238,8 @@ public class Player {
                 }
             }
         }
-        hitBox.subtractSubX(xSubVel);
+        if (temporary)
+            hitBox.subtractSubX(xSubVel);
     }
 
     private void xPushOutOfWall(Tile wall) {
