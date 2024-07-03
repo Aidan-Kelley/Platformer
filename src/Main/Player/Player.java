@@ -83,10 +83,6 @@ public class Player {
             verticalCollision();
         skipYCollision = false;
 
-        // move camera according to speed
-        // cameraSubX -= xSubVel;
-        // panel.cameraX += Math.floorDiv(cameraSubX, SUBS_PER_PIXEL);
-        // cameraSubX = Math.floorMod(cameraSubX, SUBS_PER_PIXEL);
         hitBox.addSubX(xSubVel);
         panel.cameraX += x - hitBox.x;
 
@@ -301,8 +297,7 @@ public class Player {
             else
                 pushDirection = -1;
             hitBox.height = temp;
-            // while (wall.hitBox.intersects(hitBox))
-            hitBox.x += pushDirection;
+            hitBox.y += pushDirection;
         }
         y = hitBox.y;
     }
