@@ -30,6 +30,11 @@ public class GamePanel extends JPanel implements ActionListener {
     private Rectangle restartRect, homeRect;
     private Font buttonFont = new Font("Arial", Font.BOLD, 30);
     private Spiny spiny = new Spiny(350, 556);
+    private GameState state = GameState.GAME;
+
+    public enum GameState {
+        GAME, CONTROLS
+    }
 
     public GamePanel() {
 
@@ -43,19 +48,13 @@ public class GamePanel extends JPanel implements ActionListener {
 
             @Override
             public void run() {
-                if (tiles.get(tiles.size() - 1).x < 800) {
-                    offset += 700;
-                    makeWalls(offset);
-                }
+                switch (state) {
+                    case GAME:
+                        gameLoop();
+                        break;
 
-                player.set();
-                for (Tile tile : tiles)
-                    tile.set(cameraX);
-                // spiny.set(cameraX);
-
-                for (int i = 0; i < tiles.size(); i++) {
-                    if (tiles.get(i).x < -800)
-                        tiles.remove(i);
+                    case CONTROLS:
+                        break;
                 }
                 repaint();
             }
@@ -69,6 +68,23 @@ public class GamePanel extends JPanel implements ActionListener {
         cameraX = 150;
         offset = -150;
         makeWalls(offset);
+    }
+
+    private void gameLoop() {
+        if (tiles.get(tiles.size() - 1).x < 800) {
+            offset += 700;
+            makeWalls(offset);
+        }
+
+        player.set();
+        for (Tile tile : tiles)
+            tile.set(cameraX);
+        // spiny.set(cameraX);
+
+        for (int i = 0; i < tiles.size(); i++) {
+            if (tiles.get(i).x < -800)
+                tiles.remove(i);
+        }
     }
 
     public void makeWalls(int offset) {
@@ -186,5 +202,7 @@ public class GamePanel extends JPanel implements ActionListener {
     public void mouseClicked(MouseEvent e) {
         if (restartRect.contains(new Point(e.getPoint().x, e.getPoint().y - 27)))
             reset();
+        else if (homeRect.contains(new Point(e.getPoint().x, e.getPoint().y - 27)))
+            state = GameState.CONTROLS;
     }
 }
