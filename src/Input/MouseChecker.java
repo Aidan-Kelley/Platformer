@@ -4,6 +4,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import Main.GamePanel;
+import Main.GameState;
 
 public class MouseChecker extends MouseAdapter {
 
@@ -15,7 +16,15 @@ public class MouseChecker extends MouseAdapter {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        panel.mouseClicked(e);
+        switch (GameState.state) {
+            case CONTROLS:
+                panel.getMenu().mouseClicked(e);
+                break;
+
+            case PLAYING:
+                panel.mouseClicked(e);
+                break;
+        }
     }
 
     @Override
@@ -26,6 +35,18 @@ public class MouseChecker extends MouseAdapter {
     @Override
     public void mouseReleased(MouseEvent e) {
 
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        switch (GameState.state) {
+            case CONTROLS:
+                panel.getMenu().mouseMoved(e);
+                break;
+
+            case PLAYING:
+                break;
+        }
     }
 
 }

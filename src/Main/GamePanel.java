@@ -4,13 +4,13 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Menu;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
@@ -19,6 +19,7 @@ import java.util.TimerTask;
 import javax.swing.JPanel;
 
 import Main.Player.Player;
+import ui.ControlsMenu;
 
 public class GamePanel extends JPanel implements ActionListener {
 
@@ -30,11 +31,7 @@ public class GamePanel extends JPanel implements ActionListener {
     private Rectangle restartRect, homeRect;
     private Font buttonFont = new Font("Arial", Font.BOLD, 30);
     private Spiny spiny = new Spiny(350, 556);
-    private GameState state = GameState.GAME;
-
-    public enum GameState {
-        GAME, CONTROLS
-    }
+    private ControlsMenu controlsMenu = new ControlsMenu();
 
     public GamePanel() {
 
@@ -48,12 +45,13 @@ public class GamePanel extends JPanel implements ActionListener {
 
             @Override
             public void run() {
-                switch (state) {
-                    case GAME:
+                switch (GameState.state) {
+                    case PLAYING:
                         gameLoop();
                         break;
 
                     case CONTROLS:
+                        controlsMenu.update();
                         break;
                 }
                 repaint();
@@ -87,7 +85,7 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
-    public void makeWalls(int offset) {
+    private void makeWalls(int offset) {
         int size = 50;
         Random rand = new Random();
         int index = rand.nextInt(15);
@@ -121,26 +119,34 @@ public class GamePanel extends JPanel implements ActionListener {
         return tiles;
     }
 
+    @Override
     public void paint(Graphics g) {
         super.paint(g);
 
         Graphics2D gtd = (Graphics2D) g;
 
-        player.draw(gtd);
-        for (Tile t : tiles)
-            t.draw(gtd);
-        // spiny.draw(gtd);
-        gtd.setColor(Color.BLACK);
-        gtd.drawRect(550, 25, 50, 50);
-        gtd.drawRect(625, 25, 50, 50);
-        gtd.setColor(Color.WHITE);
-        gtd.fillRect(551, 26, 48, 48);
-        gtd.fillRect(626, 26, 48, 48);
-        gtd.setColor(Color.BLACK);
-        gtd.setFont(buttonFont);
-        gtd.drawString("R", 564, 60);
-        gtd.drawString("H", 639, 60);
-        gtd.drawString("" + player.xSubVel, 639, 120);
+        switch (GameState.state) {
+            case PLAYING:
+                player.draw(gtd);
+                for (Tile t : tiles)
+                    t.draw(gtd);
+                // spiny.draw(gtd);
+                gtd.setColor(Color.BLACK);
+                gtd.drawRect(550, 25, 50, 50);
+                gtd.drawRect(625, 25, 50, 50);
+                gtd.setColor(Color.WHITE);
+                gtd.fillRect(551, 26, 48, 48);
+                gtd.fillRect(626, 26, 48, 48);
+                gtd.setColor(Color.BLACK);
+                gtd.setFont(buttonFont);
+                gtd.drawString("R", 564, 60);
+                gtd.drawString("H", 639, 60);
+                gtd.drawString("" + player.xSubVel, 639, 120);
+                break;
+            case CONTROLS:
+                controlsMenu.draw(gtd);
+                break;
+        }
     }
 
     public void keyPressed(KeyEvent e) {
@@ -200,9 +206,13 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void mouseClicked(MouseEvent e) {
-        if (restartRect.contains(new Point(e.getPoint().x, e.getPoint().y - 27)))
+        if (restartRect.contains(new Point(e.getPoint().x - 8, e.getPoint().y - 27)))
             reset();
-        else if (homeRect.contains(new Point(e.getPoint().x, e.getPoint().y - 27)))
-            state = GameState.CONTROLS;
+        else if (homeRect.contains(new Point(e.getPoint().x = 8, e.getPoint().y - 27)))
+            GameState.state = GameState.CONTROLS;
+    }
+
+    public ControlsMenu getMenu() {
+        return controlsMenu;
     }
 }

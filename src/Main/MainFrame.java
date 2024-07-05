@@ -20,6 +20,8 @@ public class MainFrame extends JFrame {
         this.add(panel);
 
         addKeyListener(new KeyChecker(panel));
-        addMouseListener(new MouseChecker(panel));
+        var temp = new MouseChecker(panel);
+        addMouseListener(temp);
+        addMouseMotionListener(temp);
     }
 }
