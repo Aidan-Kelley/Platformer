@@ -1,5 +1,6 @@
 package ui;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Menu;
 import java.awt.event.KeyEvent;

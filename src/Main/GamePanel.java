@@ -209,6 +209,7 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void mouseClicked(MouseEvent e) {
+        System.out.println('e');
         if (restartRect.contains(new Point(e.getPoint().x - 8, e.getPoint().y - 27)))
             reset();
         else if (homeRect.contains(new Point(e.getPoint().x - 8, e.getPoint().y - 27)))

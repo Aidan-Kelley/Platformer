@@ -21,7 +21,6 @@ public class KeyChecker extends KeyAdapter {
                 break;
             case PLAYING:
                 panel.keyPressed(e);
-                System.out.println(e.getKeyChar());
                 break;
         }
     }

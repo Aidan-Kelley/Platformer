@@ -16,6 +16,11 @@ public class MouseChecker extends MouseAdapter {
 
     @Override
     public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
         switch (GameState.state) {
             case CONTROLS:
                 panel.getMenu().mouseClicked(e);
@@ -25,11 +30,6 @@ public class MouseChecker extends MouseAdapter {
                 panel.mouseClicked(e);
                 break;
         }
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-
     }
 
     @Override
