@@ -1,16 +1,20 @@
 package ui;
 
 import Main.GameState;
-import ui.ControlsMenu.InputKey;
+import util.Constants;
+import Input.InputKey;
+
+import static Input.InputKey.ABILITY;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 
 public class MenuButton {
 
     private boolean mouseOver, mousePressed;
-    private Rectangle bounds;
+    private Rectangle bounds, display;
     private int index;
     private InputKey key;
 
@@ -22,9 +26,18 @@ public class MenuButton {
     public void draw(Graphics2D gtd) {
         if (index == 0)
             gtd.setColor(Color.BLUE);
-        else
+        else if (index == 1)
             gtd.setColor(new Color(173, 216, 230));
+        else
+            gtd.setColor(Color.DARK_GRAY);
         gtd.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+        gtd.setFont(Constants.buttonFont);
+
+        gtd.setColor(Color.BLACK);
+        gtd.drawString(key.toString(), bounds.x - 130,
+                bounds.y + (bounds.height + Constants.buttonFont.getSize()) / 2);
+        gtd.drawString(key.getKeyText(), bounds.x + 20,
+                bounds.y + (bounds.height + Constants.buttonFont.getSize()) / 2);
     }
 
     public void update() {
@@ -33,6 +46,12 @@ public class MenuButton {
             index = 1;
         if (mousePressed)
             index = 2;
+    }
+
+    public void keyPressed(KeyEvent e) {
+        key.setKeyCode(e.getKeyCode());
+        resetBools();
+        GameState.state = GameState.PLAYING;
     }
 
     public boolean isMouseOver() {
@@ -53,6 +72,10 @@ public class MenuButton {
 
     public Rectangle getBounds() {
         return bounds;
+    }
+
+    public int getIndex() {
+        return index;
     }
 
     public void resetBools() {

@@ -4,6 +4,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import Main.GamePanel;
+import Main.GameState;
 
 public class KeyChecker extends KeyAdapter {
     GamePanel panel;
@@ -14,11 +15,25 @@ public class KeyChecker extends KeyAdapter {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        panel.keyPressed(e);
+        switch (GameState.state) {
+            case CONTROLS:
+                panel.getMenu().keyPressed(e);
+                break;
+            case PLAYING:
+                panel.keyPressed(e);
+                System.out.println(e.getKeyChar());
+                break;
+        }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        panel.keyReleased(e);
+        switch (GameState.state) {
+            case CONTROLS:
+                break;
+            case PLAYING:
+                panel.keyReleased(e);
+                break;
+        }
     }
 }

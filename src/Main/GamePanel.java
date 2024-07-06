@@ -18,8 +18,12 @@ import java.util.TimerTask;
 
 import javax.swing.JPanel;
 
+import static Input.InputKey.*;
+
+import Main.Player.Ability;
 import Main.Player.Player;
 import ui.ControlsMenu;
+import util.Constants;
 
 public class GamePanel extends JPanel implements ActionListener {
 
@@ -29,7 +33,6 @@ public class GamePanel extends JPanel implements ActionListener {
     private int offset;
     private Timer gameTimer;
     private Rectangle restartRect, homeRect;
-    private Font buttonFont = new Font("Arial", Font.BOLD, 30);
     private Spiny spiny = new Spiny(350, 556);
     private ControlsMenu controlsMenu = new ControlsMenu();
 
@@ -138,9 +141,9 @@ public class GamePanel extends JPanel implements ActionListener {
                 gtd.fillRect(551, 26, 48, 48);
                 gtd.fillRect(626, 26, 48, 48);
                 gtd.setColor(Color.BLACK);
-                gtd.setFont(buttonFont);
+                gtd.setFont(Constants.buttonFont);
                 gtd.drawString("R", 564, 60);
-                gtd.drawString("H", 639, 60);
+                gtd.drawString("C", 639, 60);
                 gtd.drawString("" + player.xSubVel, 639, 120);
                 break;
             case CONTROLS:
@@ -150,17 +153,17 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyChar() == 'a')
+        if (e.getKeyCode() == LEFT.getKeyCode())
             player.keyLeft = true;
-        if (e.getKeyChar() == 'w')
+        if (e.getKeyCode() == UP.getKeyCode())
             player.keyJump = true;
-        if (e.getKeyChar() == 's')
+        if (e.getKeyCode() == DOWN.getKeyCode())
             player.keyDown = true;
-        if (e.getKeyChar() == 'd')
+        if (e.getKeyCode() == RIGHT.getKeyCode())
             player.keyRight = true;
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT)
+        if (e.getKeyCode() == JUMP.getKeyCode())
             player.keyJump = true;
-        if (e.getKeyCode() == KeyEvent.VK_LEFT)
+        if (e.getKeyCode() == ABILITY.getKeyCode())
             player.keyAbility = true;
         if (e.getKeyChar() == 'p') {
             if (tiles.get(tiles.size() - 1).x < 800) {
@@ -186,17 +189,17 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void keyReleased(KeyEvent e) {
-        if (e.getKeyChar() == 'a')
+        if (e.getKeyCode() == LEFT.getKeyCode())
             player.keyLeft = false;
-        if (e.getKeyChar() == 'w')
+        if (e.getKeyCode() == UP.getKeyCode())
             player.keyJump = false;
-        if (e.getKeyChar() == 's')
+        if (e.getKeyCode() == DOWN.getKeyCode())
             player.keyDown = false;
-        if (e.getKeyChar() == 'd')
+        if (e.getKeyCode() == RIGHT.getKeyCode())
             player.keyRight = false;
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT)
+        if (e.getKeyCode() == JUMP.getKeyCode())
             player.keyJump = false;
-        if (e.getKeyCode() == KeyEvent.VK_LEFT)
+        if (e.getKeyCode() == ABILITY.getKeyCode())
             player.keyAbility = false;
     }
 
@@ -208,7 +211,7 @@ public class GamePanel extends JPanel implements ActionListener {
     public void mouseClicked(MouseEvent e) {
         if (restartRect.contains(new Point(e.getPoint().x - 8, e.getPoint().y - 27)))
             reset();
-        else if (homeRect.contains(new Point(e.getPoint().x = 8, e.getPoint().y - 27)))
+        else if (homeRect.contains(new Point(e.getPoint().x - 8, e.getPoint().y - 27)))
             GameState.state = GameState.CONTROLS;
     }
 
