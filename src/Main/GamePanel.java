@@ -43,24 +43,25 @@ public class GamePanel extends JPanel implements ActionListener {
 
         player = new Player(400, 300, this);
         reset();
-        gameTimer = new Timer();
-        gameTimer.schedule(new TimerTask() {
 
-            @Override
-            public void run() {
-                switch (GameState.state) {
-                    case PLAYING:
-                        gameLoop();
-                        break;
+        // gameTimer = new Timer();
+        // gameTimer.schedule(new TimerTask() {
 
-                    case CONTROLS:
-                        controlsMenu.update();
-                        break;
-                }
-                repaint();
-            }
+        // @Override
+        // public void run() {
+        // switch (GameState.state) {
+        // case PLAYING:
+        // gameLoop();
+        // break;
 
-        }, 0, 17);
+        // case CONTROLS:
+        // controlsMenu.update();
+        // break;
+        // }
+        // repaint();
+        // }
+
+        // }, 0, 17);
     }
 
     public void reset() {

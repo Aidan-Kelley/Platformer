@@ -208,11 +208,13 @@ public class Player {
                         xPushOutOfWall(tile);
                         return;
                     } else {
-                        skipYCollision = true;
-                        hitBox.subtractSubX(xSubVel);
-                        hitBox.y += cornerClip;
-                        if (yVel >= -1) { // if in corner moving downward, snap up to floor, else do nothing
-                            hitBox.x -= Math.signum(xSubVel) * 1;
+                        if (yVel < 0) { // if moving upwards, allow corner clip
+                            skipYCollision = true;
+                            hitBox.subtractSubX(xSubVel);
+                            hitBox.y += cornerClip;
+                            temporary = false;
+                        } else { // moving downwards, maybe push up
+                            hitBox.x -= Math.signum(xSubVel) * xSubVel;
                             if (hitBox.intersects(tile.hitBox) || inAir <= 1) { // running over one block gaps
                                 hitBox.addSubX(xSubVel);
                                 while (tile.hitBox.intersects(hitBox))
@@ -223,9 +225,8 @@ public class Player {
                                 xPushOutOfWall(tile);
                                 return;
                             }
-                        } else {
-                            temporary = false;
                         }
+
                     }
                 } else {
                     hitBox.subtractSubX(xSubVel);
@@ -236,6 +237,7 @@ public class Player {
         }
         if (temporary)
             hitBox.subtractSubX(xSubVel);
+
     }
 
     private void xPushOutOfWall(Tile wall) {
