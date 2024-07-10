@@ -44,24 +44,24 @@ public class GamePanel extends JPanel implements ActionListener {
         player = new Player(400, 300, this);
         reset();
 
-        // gameTimer = new Timer();
-        // gameTimer.schedule(new TimerTask() {
+        gameTimer = new Timer();
+        gameTimer.schedule(new TimerTask() {
 
-        // @Override
-        // public void run() {
-        // switch (GameState.state) {
-        // case PLAYING:
-        // gameLoop();
-        // break;
+            @Override
+            public void run() {
+                switch (GameState.state) {
+                    case PLAYING:
+                        gameLoop();
+                        break;
 
-        // case CONTROLS:
-        // controlsMenu.update();
-        // break;
-        // }
-        // repaint();
-        // }
+                    case CONTROLS:
+                        controlsMenu.update();
+                        break;
+                }
+                repaint();
+            }
 
-        // }, 0, 17);
+        }, 0, 17);
     }
 
     public void reset() {
@@ -97,7 +97,7 @@ public class GamePanel extends JPanel implements ActionListener {
         // tiles.add(new Tile(offset + i * size, 600, size, size, Tile.Type.WALL));
 
         // }
-        if (index == 14) {
+        if (index == 14) { // staircase
             for (int i = 0; i < 14; i++)
                 if (i < 6)
                     tiles.add(new Tile(offset + i * size, 600, size, size,

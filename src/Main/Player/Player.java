@@ -74,7 +74,6 @@ public class Player {
         }
 
         movement();
-
         if (!skipXCollision)
             horizontalCollision();
         skipXCollision = false;
@@ -199,7 +198,7 @@ public class Player {
         hitBox.addSubX(xSubVel);
         for (Tile tile : panel.getTiles()) {
             if (tile.isSolid && hitBox.intersects(tile.hitBox)) {
-                if (Math.abs(xSubVel) > 320) {
+                if (Math.abs(xSubVel) >= 320) {
                     int cornerClip = 25;
                     hitBox.y -= cornerClip;
                     if (hitBox.intersects(tile.hitBox)) {
@@ -213,18 +212,12 @@ public class Player {
                             hitBox.subtractSubX(xSubVel);
                             hitBox.y += cornerClip;
                             temporary = false;
-                        } else { // moving downwards, maybe push up
-                            hitBox.x -= Math.signum(xSubVel) * xSubVel;
-                            if (hitBox.intersects(tile.hitBox) || inAir <= 1) { // running over one block gaps
-                                hitBox.addSubX(xSubVel);
-                                while (tile.hitBox.intersects(hitBox))
-                                    hitBox.y -= 1;
-                                yVel = 0;
-                                y = hitBox.y;
-                            } else {
-                                xPushOutOfWall(tile);
-                                return;
-                            }
+                        } else { // moving downwards push up
+                            hitBox.y += cornerClip;
+                            while (tile.hitBox.intersects(hitBox))
+                                hitBox.y -= 1;
+                            yVel = 0;
+                            y = hitBox.y;
                         }
 
                     }
@@ -418,6 +411,7 @@ public class Player {
                 }
                 hitBox.y++;
             }
+        hitBox.y--;
         return false;
     }
 
